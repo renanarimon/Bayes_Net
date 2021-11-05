@@ -17,7 +17,7 @@ public class main {
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse("alarm_net.xml");
-            NodeList nameList = doc.getElementsByTagName("NAME");
+            NodeList nameList = doc.getElementsByTagName("NA ME");
             for (int i = 0; i < nameList.getLength(); i++) {
                 Node n = nameList.item(i);
                 if (n.getNodeType() == Node.ELEMENT_NODE){
