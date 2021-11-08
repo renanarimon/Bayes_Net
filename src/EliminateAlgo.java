@@ -1,2 +1,2 @@
-package PACKAGE_NAME;public interface ProbAlgo {
+package PACKAGE_NAME;public class EliminateAlgo {
 }
