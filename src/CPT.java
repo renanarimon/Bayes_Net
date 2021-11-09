@@ -1,2 +1,7 @@
-package PACKAGE_NAME;public class CPT {
+import java.util.ArrayList;
+
+public class CPT {
+    private double[] table;
+    private int size;
+
 }

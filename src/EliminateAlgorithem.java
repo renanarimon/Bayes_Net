@@ -1,4 +1,4 @@
-public interface EliminateAlgo {
+public interface EliminateAlgorithem {
 
     /**
      * join 2 CPTs by multiple
