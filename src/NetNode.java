@@ -2,31 +2,34 @@ import java.util.ArrayList;
 
 public class NetNode {
 
-    private String Name;
+    private final String Name;
     private String Given;
-    private Observed observed;
+    private ArrayList<String> outcomes;
+    private boolean fromParent;
+    private boolean fromChild;
     public ArrayList<NetNode> Children;
     public ArrayList<NetNode> Parents;
     private CPT cpt;
 
-    enum Observed{
-        WHITE,
-        GRAY,
-        BLACK
-    }
 
-    public NetNode(String name) {
+
+    public NetNode(String name, ArrayList<String> outcomes) {
         Name = name;
         Given = null;
-        observed = Observed.WHITE;
+        fromChild = false;
+        fromParent = false;
         Children = new ArrayList<NetNode>();
         Parents = new ArrayList<NetNode>();
-        cpt = new CPT();
+        this.outcomes = outcomes;
+        cpt = null;
     }
 
+    public void setCpt(ArrayList<Double> arr) {
+        this.cpt = new CPT(arr);
+    }
 
-    public void setObserved(Observed observed) {
-        this.observed = observed;
+    public CPT getCpt() {
+        return cpt;
     }
 
     public void setGiven(String given) {
