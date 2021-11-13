@@ -1,29 +1,64 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class BayesBall {
-    private BayesNet bayesNet;
+    private Net net;
     private Stack<NetNode> stack;
 
     public BayesBall() {
-        this.bayesNet = new BayesNet();
         this.stack = new Stack<NetNode>();
+        this.net = new Net();
     }
 
-//    public void dfsWithoutRecursion(NetNode start, NetNode end) {
-//        Stack<NetNode> stack = new Stack<NetNode>();
-////        boolean[] isVisited = new boolean[adjVertices.size()];
-//        stack.push(start);
-//        while (!stack.isEmpty()) {
-//            NetNode current = stack.pop();
-//            current.setObserved(NetNode.Observed.BLACK);
-//            for (NetNode n : current.Children) {
-//                if (n.)
-//            }
-//        }
-//
-//    }
 
-    private void FromParent() {
+
+    private void goOverQ(){
+    }
+
+    public void dfs(NetNode start, NetNode end) {
+        Stack<NetNode> stack = new Stack<NetNode>();
+        stack.push(start);
+        while (!stack.isEmpty()) {
+            NetNode curr = stack.pop();
+
+            if (!curr.getGiven()){ //not colored
+                for (String c: curr.Children){ //push children to stack
+                    NetNode child = net.getBayesNet().get(c);
+                    if (!child.fromParent) {
+                        child.fromParent = true;
+                        stack.push(child);
+                    }
+                }
+                if (curr.fromChild){
+                    for (String p : curr.Parents){
+                        NetNode parent = net.getBayesNet().get(p);
+                        if (!parent.fromChild) {
+                            parent.fromChild = true;
+                            stack.push(parent);
+                        }
+                    }
+                }
+            }
+            else { //colored
+                if (curr.fromParent){
+                    for (String p : curr.Parents){
+                        NetNode parent = net.getBayesNet().get(p);
+                        if (!parent.fromChild) {
+                            parent.fromChild = true;
+                            stack.push(parent);
+                        }
+                    }
+                }
+            }
+
+
+        }
 
     }
+
+
+
 }
+
