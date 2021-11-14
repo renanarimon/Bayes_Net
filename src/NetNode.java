@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class NetNode {
 
     private final String Name;
-    private boolean Given;
+    private String Given;
     private ArrayList<String> outcomes;
     public boolean fromParent;
     public boolean fromChild;
@@ -15,7 +15,7 @@ public class NetNode {
 
     public NetNode(String name, ArrayList<String> outcomes) {
         Name = name;
-        Given = false;
+        Given = null;
         fromChild = false;
         fromParent = false;
         Children = new ArrayList<String>();
@@ -32,12 +32,12 @@ public class NetNode {
         return cpt;
     }
 
-    public boolean getGiven() {
+    public String getGiven() {
         return Given;
     }
 
 
-    public void setGiven(boolean given) {
+    public void setGiven(String given) {
         Given = given;
     }
 
