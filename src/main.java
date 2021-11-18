@@ -7,14 +7,20 @@ import java.io.IOException;
 public class main {
 
     public static void main(String[] args) throws XPathExpressionException, IOException, ParserConfigurationException, SAXException {
-//        Net n = new Net();
-//        n.readFromFile("C:\\Users\\PC\\IdeaProjects\\AI_algo_ex\\src\\input.txt");
-////        n.my_xpath("C:\\Users\\PC\\IdeaProjects\\AI_algo_ex\\alarm_net.xml");
-//        System.out.println(n.getBayesNet().values());
-//        System.out.println(n.getQueryBayesBall());
-//        System.out.println(n.getQueryEliminate());
+        Net net = new Net();
+        net.readFromFile("C:\\Users\\PC\\IdeaProjects\\AI_algo_ex\\src\\input.txt");
 
-        BayesBall bayesBall = new BayesBall();
-        bayesBall.goOverQ();
+//        BayesBall bayesBall = new BayesBall(net);
+//        bayesBall.goOverQ();
+//        EliminateAlgo eliminateAlgo = new EliminateAlgo(net);
+//        eliminateAlgo.goOverE();
+//        System.out.println(net.getBayesNet().get("E"));
+//        String p = net.getBayesNet().get("E").Parents.get(0);
+//        System.out.println(net.getBayesNet().get(p));
+//        System.out.println(net.getBayesNet().get(p).getOutcomes().size());
+        System.out.println(net.toString());
+
+
+
     }
 }

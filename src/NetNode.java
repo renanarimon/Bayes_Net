@@ -41,6 +41,10 @@ public class NetNode {
         Given = given;
     }
 
+    public ArrayList<String> getOutcomes() {
+        return outcomes;
+    }
+
     public void setChildren(ArrayList<String> children) {
         Children = children;
     }
@@ -63,7 +67,7 @@ public class NetNode {
                 ", fromChild=" + fromChild +
                 ", Children=" + Children +
                 ", Parents=" + Parents +
-                ", cpt=" + cpt +
+                ", cpt=" + cpt.toString() +
                 '}';
     }
 }

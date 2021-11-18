@@ -1,44 +1,56 @@
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Scanner;
+import java.util.Arrays;
 import java.util.Stack;
 
 public class BayesBall {
     private Net net;
     private Stack<NetNode> stack;
 
-    public BayesBall() throws XPathExpressionException, IOException, ParserConfigurationException, SAXException {
+    public BayesBall(Net net){
         this.stack = new Stack<NetNode>();
-        this.net = new Net();
-        net.readFromFile("C:\\Users\\PC\\IdeaProjects\\AI_algo_ex\\src\\input.txt");
+        this.net = net;
     }
 
 
     public void goOverQ() {
-        for (int j = 0; j < net.getQueryBayesBall().size(); j++) {
+        for (int i = 0; i < net.getQueryBayesBall().size(); i++) {
+            // restart net and stack for new Query
+            this.stack.clear();
             for (NetNode n : net.getBayesNet().values()) {
                 n.setGiven(null);
                 n.fromChild = false;
                 n.fromParent = false;
             }
-            String q = net.getQueryBayesBall().get(j);
-            NetNode start = net.getBayesNet().get(q.charAt(0) + "");
-            NetNode end = net.getBayesNet().get(q.charAt(2) + "");
-            for (int i = 4; i < q.length(); i += 4) {
-                net.getBayesNet().get(q.charAt(i) + "").setGiven(q.charAt(i + 2) + "");
+
+            String[] splitQ;
+            String q = net.getQueryBayesBall().get(i);
+            splitQ = q.split("\\|");
+
+            NetNode start = net.getBayesNet().get(splitQ[0].split("-")[0]);
+            NetNode end = net.getBayesNet().get(splitQ[0].split("-")[1]);
+
+            String[] splitE;
+            splitE = splitQ[1].split(",");
+            for (String s: splitE){
+                String[] tmp;
+                tmp = s.split("=");
+                net.getBayesNet().get(tmp[0]).setGiven(tmp[1]);
             }
+
             dfs(start, end);
         }
 
     }
 
+    /**
+     * find if 2 vars are independent.
+     * independent --> "yes"
+     * dependent --> "no"
+     * the algorithm is DFS with BayesBall rules.
+     * @param start
+     * @param end
+     *
+     */
     public void dfs(NetNode start, NetNode end) {
-        Stack<NetNode> stack = new Stack<NetNode>();
         stack.push(start);
         NetNode curr = stack.pop();
         pushChildren(curr);
@@ -66,22 +78,31 @@ public class BayesBall {
         System.out.println("yes"); // no path --> not depended
     }
 
+    /**
+     * help function for dfs():
+     * push parents to stack
+     * @param curr
+     */
     private void pushParents(NetNode curr) {
         for (String p : curr.Parents) {
             NetNode parent = net.getBayesNet().get(p);
             if (!parent.fromChild) {
                 parent.fromChild = true;
-                stack.push(parent);
+                this.stack.push(parent);
             }
         }
     }
-
+    /**
+     * help function for dfs():
+     * push children to stack
+     * @param curr
+     */
     private void pushChildren(NetNode curr) {
         for (String c : curr.Children) { //push children to stack
             NetNode child = net.getBayesNet().get(c);
             if (!child.fromParent) {
                 child.fromParent = true;
-                stack.push(child);
+                this.stack.push(child);
             }
         }
     }

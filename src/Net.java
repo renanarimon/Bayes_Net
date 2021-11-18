@@ -113,4 +113,12 @@ public class Net {
         }
     }
 
+    public String toString(){
+        String st="";
+        for(NetNode n: getBayesNet().values()){
+            st += n.toString() + "\n";
+        }
+        return st;
+    }
+
 }
