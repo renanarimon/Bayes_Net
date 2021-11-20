@@ -28,12 +28,14 @@ public class BayesBall {
             NetNode start = net.getBayesNet().get(splitQ[0].split("-")[0]);
             NetNode end = net.getBayesNet().get(splitQ[0].split("-")[1]);
 
-            String[] splitE;
-            splitE = splitQ[1].split(",");
-            for (String s: splitE){
-                String[] tmp;
-                tmp = s.split("=");
-                net.getBayesNet().get(tmp[0]).setGiven(tmp[1]);
+            if (splitQ.length>1) { // if there are given
+                String[] splitE;
+                splitE = splitQ[1].split(",");
+                for (String s : splitE) {
+                    String[] tmp;
+                    tmp = s.split("=");
+                    net.getBayesNet().get(tmp[0]).setGiven(tmp[1]);
+                }
             }
 
             dfs(start, end);

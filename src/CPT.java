@@ -1,23 +1,26 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class CPT {
-    private ArrayList<Double> table;
+    private LinkedHashMap<String, Double> table;
 
-    public CPT(ArrayList<Double> arr) {
-        this.table = arr;
+    public CPT() {
+        this.table = new LinkedHashMap<String, Double>();
     }
 
-    public ArrayList<Double> getTable() {
-        return table;
+    public void add(String s, Double d){
+        table.put(s,d);
     }
+
+
+
     public String toString(){
-//        String st = "";
-        String st = table.toString();
-//        for (int i = 0; i < table.size(); i++) {
-//            st += ta
-//        }
-        return st;
+        if (table.isEmpty()){
+            return "[]";
+        }
+        return table.toString();
     }
 
 }

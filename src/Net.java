@@ -29,6 +29,7 @@ public class Net {
     public HashMap<String, NetNode> getBayesNet() {
         return bayesNet;
     }
+
     public ArrayList<String> getQueryBayesBall() {
         return QueryBayesBall;
     }
@@ -42,12 +43,11 @@ public class Net {
         Scanner myReader = new Scanner(f);
         String xml = myReader.nextLine();
         this.my_xpath(xml);
-        while (myReader.hasNextLine()){
+        while (myReader.hasNextLine()) {
             String str = myReader.nextLine();
-            if (str.charAt(1)!='('){ // bayes ball Q
+            if (str.charAt(1) != '(') { // bayes ball Q
                 this.QueryBayesBall.add(str);
-            }
-            else {
+            } else {
                 this.QueryEliminate.add(str);
             }
 
@@ -72,7 +72,7 @@ public class Net {
 
     private void var_xpath(XPath xPath, Document doc) throws XPathExpressionException {
         NodeList nodeList = (NodeList) xPath.compile("//VARIABLE").evaluate(doc, XPathConstants.NODESET); //from string to nodeset
-        for (int i=1; i<= nodeList.getLength(); i++){ //nodeset --> NetNode --> net
+        for (int i = 1; i <= nodeList.getLength(); i++) { //nodeset --> NetNode --> net
             NodeList tmpName = (NodeList) xPath.compile(String.format("/NETWORK/VARIABLE[%d]/NAME", i)).evaluate(doc, XPathConstants.NODESET);
             NodeList tmpOutcome = (NodeList) xPath.compile(String.format("/NETWORK/VARIABLE[%d]/OUTCOME", i)).evaluate(doc, XPathConstants.NODESET);
             String name = tmpName.item(0).getTextContent();
@@ -89,33 +89,87 @@ public class Net {
 
     private void def_xpath(XPath xPath, Document doc) throws XPathExpressionException {
         NodeList nodeList = (NodeList) xPath.compile("//DEFINITION").evaluate(doc, XPathConstants.NODESET);
-        for (int i=1; i<= nodeList.getLength(); i++){
+        for (int i = 1; i <= nodeList.getLength(); i++) {
             NodeList name = (NodeList) xPath.compile(String.format("/NETWORK/DEFINITION[%d]/FOR", i)).evaluate(doc, XPathConstants.NODESET);
             NodeList tmpGiven = (NodeList) xPath.compile(String.format("/NETWORK/DEFINITION[%d]/GIVEN", i)).evaluate(doc, XPathConstants.NODESET);
             NodeList tmpTable = (NodeList) xPath.compile(String.format("/NETWORK/DEFINITION[%d]/TABLE", i)).evaluate(doc, XPathConstants.NODESET);
             String n = name.item(0).getTextContent();
             NetNode curr = this.bayesNet.get(n);
-            for (int j=0; j< tmpGiven.getLength(); j++){
-
-//                System.out.println(curr);
+            for (int j = 0; j < tmpGiven.getLength(); j++) {
                 curr.Parents.add(tmpGiven.item(j).getTextContent());
                 this.bayesNet.get(tmpGiven.item(j).getTextContent()).Children.add(curr.getName());
-
             }
+
             String table = tmpTable.item(0).getTextContent();
             String[] t = table.split(" ");
             ArrayList<Double> arr = new ArrayList<>();
             for (String s : t) {
-                double d =Double.parseDouble(s);
+                double d = Double.parseDouble(s);
                 arr.add(d);
             }
-            curr.setCpt(arr);
+
+            int j=0;
+            while (j<arr.size()){
+                if (curr.Parents.size()>0){
+                    rec("", j, 0, curr, arr);
+                    break;
+                }
+                for (String s: curr.getOutcomes()){
+                    curr.getCpt().add(s, arr.get(j++));
+                }
+            }
+
         }
     }
 
-    public String toString(){
-        String st="";
-        for(NetNode n: getBayesNet().values()){
+    private int rec(String st,int j, int k, NetNode curr, ArrayList<Double>arr) {
+        if (k == curr.Parents.size()-1) {
+            for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
+                for (String s1 : curr.getOutcomes()) {
+                    curr.getCpt().add(st + s + s1, arr.get(j++));
+                }
+            }
+            return j;
+        }
+        for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
+            st = s;
+            j = rec(st, j, k+1, curr, arr);
+        }
+        return j;
+    }
+
+
+
+
+//            int j = 0;
+//            HashMap<String, Double> map = new HashMap<>();
+//            for (String s : curr.getOutcomes()) {
+//                for (int l = 0; l < arr.size(); l++) {
+//                    if (curr.Parents.size()>0){
+//                        String st = "";
+//                        st = rec(st,l, 0, curr);
+//                        Double d = arr.get(j);
+//                        map.put(st, d);
+//                        j++;
+//                    } else {
+//                        for (String s : curr.getOutcomes()){
+//                            Double d = arr.get(j);
+//                            map.put(s, d);
+//                            j++;
+//                        }
+//                    }
+//                }
+////            }
+//            curr.setCpt(map);
+//        }
+
+//    }
+
+
+
+    public String toString() {
+        String st = "";
+        for (NetNode n : getBayesNet().values()) {
             st += n.toString() + "\n";
         }
         return st;

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NetNode {
 
@@ -21,12 +22,9 @@ public class NetNode {
         Children = new ArrayList<String>();
         Parents = new ArrayList<String>();
         this.outcomes = outcomes;
-        cpt = null;
+        cpt = new CPT();
     }
 
-    public void setCpt(ArrayList<Double> arr) {
-        this.cpt = new CPT(arr);
-    }
 
     public CPT getCpt() {
         return cpt;
@@ -36,7 +34,6 @@ public class NetNode {
         return Given;
     }
 
-
     public void setGiven(String given) {
         Given = given;
     }
@@ -45,17 +42,12 @@ public class NetNode {
         return outcomes;
     }
 
-    public void setChildren(ArrayList<String> children) {
-        Children = children;
-    }
-
-    public void setParents(ArrayList<String> parents) {
-        Parents = parents;
-    }
 
     public String getName() {
         return Name;
     }
+
+
 
     @Override
     public String toString() {
@@ -68,6 +60,6 @@ public class NetNode {
                 ", Children=" + Children +
                 ", Parents=" + Parents +
                 ", cpt=" + cpt.toString() +
-                '}';
+                "}";
     }
 }
