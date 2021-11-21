@@ -14,12 +14,7 @@ public class BayesBall {
     public void goOverQ() {
         for (int i = 0; i < net.getQueryBayesBall().size(); i++) {
             // restart net and stack for new Query
-            this.stack.clear();
-            for (NetNode n : net.getBayesNet().values()) {
-                n.setGiven(null);
-                n.fromChild = false;
-                n.fromParent = false;
-            }
+
 
             String[] splitQ;
             String q = net.getQueryBayesBall().get(i);
@@ -38,9 +33,9 @@ public class BayesBall {
                 }
             }
 
-            dfs(start, end);
-        }
+            System.out.println(dfs(start, end));
 
+        }
     }
 
     /**
@@ -52,7 +47,7 @@ public class BayesBall {
      * @param end
      *
      */
-    public void dfs(NetNode start, NetNode end) {
+    public String dfs(NetNode start, NetNode end) {
         stack.push(start);
         NetNode curr = stack.pop();
         pushChildren(curr);
@@ -60,8 +55,8 @@ public class BayesBall {
 
         while (!stack.isEmpty()) {
             if (stack.contains(end)) { //there is a path --> depended
-                System.out.println("no");
-                return;
+                cleanNet();
+                return "no";
             }
             curr = stack.pop();
 
@@ -77,7 +72,17 @@ public class BayesBall {
             }
 
         }
-        System.out.println("yes"); // no path --> not depended
+        cleanNet();
+        return "yes"; // no path --> not depended
+    }
+
+    private void cleanNet(){
+        this.stack.clear();
+        for (NetNode n : net.getBayesNet().values()) {
+            n.setGiven(null);
+            n.fromChild = false;
+            n.fromParent = false;
+        }
     }
 
     /**

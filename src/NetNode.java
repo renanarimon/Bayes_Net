@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class NetNode {
 
@@ -22,7 +23,7 @@ public class NetNode {
         Children = new ArrayList<String>();
         Parents = new ArrayList<String>();
         this.outcomes = outcomes;
-        cpt = new CPT();
+        cpt = new CPT(name);
     }
 
 
@@ -46,6 +47,8 @@ public class NetNode {
     public String getName() {
         return Name;
     }
+
+
 
 
 

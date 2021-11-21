@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Net {
@@ -38,6 +39,12 @@ public class Net {
         return QueryEliminate;
     }
 
+    /*
+    read from txt file:
+        * create net
+        * QueryBayesBall
+        * QueryEliminate
+     */
     public void readFromFile(String file_path) throws IOException, XPathExpressionException, ParserConfigurationException, SAXException {
         File f = new File(file_path);
         Scanner myReader = new Scanner(f);
@@ -55,6 +62,9 @@ public class Net {
         myReader.close();
     }
 
+  /*
+  create XPATH to NETWORK in xml
+   */
     public void my_xpath(String file) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
         docFact.setNamespaceAware(true);
@@ -70,6 +80,12 @@ public class Net {
 
     }
 
+    /**
+     * create NetNode by VARIABLE from xml
+     * @param xPath
+     * @param doc
+     * @throws XPathExpressionException
+     */
     private void var_xpath(XPath xPath, Document doc) throws XPathExpressionException {
         NodeList nodeList = (NodeList) xPath.compile("//VARIABLE").evaluate(doc, XPathConstants.NODESET); //from string to nodeset
         for (int i = 1; i <= nodeList.getLength(); i++) { //nodeset --> NetNode --> net
@@ -87,6 +103,12 @@ public class Net {
 
     }
 
+    /**
+     * insert DEFINITION to NetNode from xml
+     * @param xPath
+     * @param doc
+     * @throws XPathExpressionException
+     */
     private void def_xpath(XPath xPath, Document doc) throws XPathExpressionException {
         NodeList nodeList = (NodeList) xPath.compile("//DEFINITION").evaluate(doc, XPathConstants.NODESET);
         for (int i = 1; i <= nodeList.getLength(); i++) {
@@ -100,6 +122,7 @@ public class Net {
                 this.bayesNet.get(tmpGiven.item(j).getTextContent()).Children.add(curr.getName());
             }
 
+            //CPT
             String table = tmpTable.item(0).getTextContent();
             String[] t = table.split(" ");
             ArrayList<Double> arr = new ArrayList<>();
@@ -107,6 +130,7 @@ public class Net {
                 double d = Double.parseDouble(s);
                 arr.add(d);
             }
+
 
             int j=0;
             while (j<arr.size()){
@@ -118,10 +142,19 @@ public class Net {
                     curr.getCpt().add(s, arr.get(j++));
                 }
             }
-
+            curr.getCpt().Given.addAll(curr.Parents);
         }
     }
 
+    /**
+     * A recursive function that adds the Double value to the CPT according to the exact string key.
+     * @param st = string of outcomes
+     * @param j = index on arr
+     * @param k = index on parents
+     * @param curr = NetNode
+     * @param arr = values for table (Double)
+     * @return int j = index on arr
+     */
     private int rec(String st,int j, int k, NetNode curr, ArrayList<Double>arr) {
         if (k == curr.Parents.size()-1) {
             for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
@@ -138,32 +171,18 @@ public class Net {
         return j;
     }
 
-
-
-
-//            int j = 0;
-//            HashMap<String, Double> map = new HashMap<>();
-//            for (String s : curr.getOutcomes()) {
-//                for (int l = 0; l < arr.size(); l++) {
-//                    if (curr.Parents.size()>0){
-//                        String st = "";
-//                        st = rec(st,l, 0, curr);
-//                        Double d = arr.get(j);
-//                        map.put(st, d);
-//                        j++;
-//                    } else {
-//                        for (String s : curr.getOutcomes()){
-//                            Double d = arr.get(j);
-//                            map.put(s, d);
-//                            j++;
-//                        }
-//                    }
-//                }
-////            }
-//            curr.setCpt(map);
+//    public void remove(String name){
+//        for (NetNode n: bayesNet.values()){
+//            if (Objects.equals(n.getName(), name) || n.Parents.contains(name)){
+//                bayesNet.remove(n.getName());
+//            }
 //        }
-
 //    }
+
+
+
+
+
 
 
 
