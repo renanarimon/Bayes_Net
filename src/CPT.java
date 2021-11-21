@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class CPT {
+public class CPT implements Comparable<CPT> {
     private LinkedHashMap<String, Double> table;
     private String name;
     ArrayList<String> Given;
@@ -30,4 +30,35 @@ public class CPT {
         return table.toString();
     }
 
+    @Override
+    public int compareTo(CPT o) {
+        if (this.table.size() < o.table.size()){
+            return 1;
+        }
+        else if (this.table.size() > o.table.size()){
+            return -1;
+        }
+        else{
+            int sumCurr = 0;
+            for(String s: this.Given){
+                for(int i=0; i<s.length(); i++){
+                    int asciiValue = s.charAt(i);
+                    sumCurr += asciiValue;
+                }
+            }
+            int sumO = 0;
+            for(String s: o.Given){
+                for(int i=0; i<s.length(); i++){
+                    int asciiValue = s.charAt(i);
+                    sumCurr += asciiValue;
+                }
+            }
+            if (sumCurr > sumO){
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        }
+    }
 }

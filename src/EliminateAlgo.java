@@ -13,13 +13,12 @@ public class EliminateAlgo implements EliminateAlgorithem {
         for(String s: net.getBayesNet().keySet()){
             factors.put(s, net.getBayesNet().get(s).getCpt());
         }
+
         hidden = new ArrayList<>();
         query = "";
         evidence = new ArrayList<>();
 
     }
-
-
 
     public ArrayList<String> getHidden() {
         return hidden;
