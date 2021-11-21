@@ -11,6 +11,7 @@ public class CPT implements Comparable<CPT> {
         Given = new ArrayList<>();
     }
 
+
     public void add(String s, Double d){
         table.put(s,d);
     }

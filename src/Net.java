@@ -69,14 +69,17 @@ public class Net {
         DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
         docFact.setNamespaceAware(true);
         DocumentBuilder builder = docFact.newDocumentBuilder();
-        Document doc = builder.parse(file);
+        try {
+            Document doc = builder.parse(file);
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xpath = xPathFactory.newXPath();
 
-        XPathFactory xPathFactory = XPathFactory.newInstance();
-        XPath xpath = xPathFactory.newXPath();
-
-        XPathExpression expr = xpath.compile("//NETWORK");
-        this.var_xpath(xpath, doc);
-        this.def_xpath(xpath, doc);
+            XPathExpression expr = xpath.compile("//NETWORK");
+            this.var_xpath(xpath, doc);
+            this.def_xpath(xpath, doc);
+        }catch (Exception e){
+            System.err.println("file doesn't found");
+        }
 
     }
 
@@ -159,7 +162,12 @@ public class Net {
         if (k == curr.Parents.size()-1) {
             for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
                 for (String s1 : curr.getOutcomes()) {
-                    curr.getCpt().add(st + s + s1, arr.get(j++));
+                    if (!Objects.equals(st, "")){
+                        curr.getCpt().add(st+"-" + s+"-" + s1, arr.get(j++));
+                    }else {
+                        curr.getCpt().add(st + s+"-" + s1, arr.get(j++));
+                    }
+
                 }
             }
             return j;
@@ -178,12 +186,6 @@ public class Net {
 //            }
 //        }
 //    }
-
-
-
-
-
-
 
 
     public String toString() {

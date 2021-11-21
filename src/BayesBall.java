@@ -13,8 +13,9 @@ public class BayesBall {
 
     public void goOverQ() {
         for (int i = 0; i < net.getQueryBayesBall().size(); i++) {
-            // restart net and stack for new Query
-
+            for (NetNode n : net.getBayesNet().values()) {
+                n.setGiven(null);
+            }
 
             String[] splitQ;
             String q = net.getQueryBayesBall().get(i);
@@ -34,6 +35,7 @@ public class BayesBall {
             }
 
             System.out.println(dfs(start, end));
+
 
         }
     }
@@ -79,7 +81,7 @@ public class BayesBall {
     private void cleanNet(){
         this.stack.clear();
         for (NetNode n : net.getBayesNet().values()) {
-            n.setGiven(null);
+//            n.setGiven(null);
             n.fromChild = false;
             n.fromParent = false;
         }
