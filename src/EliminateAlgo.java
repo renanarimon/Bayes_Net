@@ -7,13 +7,15 @@ public class EliminateAlgo implements EliminateAlgorithem {
     private ArrayList<String> evidence;
 
     public EliminateAlgo(Net net) {
-        this.tmpNet = net;
+        this.tmpNet = new Net(net);
         hidden = new ArrayList<>();
         query = "";
         evidence = new ArrayList<>();
     }
 
-
+    public Net getTmpNet() {
+        return tmpNet;
+    }
 
     public ArrayList<String> getHidden() {
         return hidden;

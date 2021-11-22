@@ -27,6 +27,19 @@ public class Net {
 
     }
 
+    public Net(Net other){
+        this.bayesNet = new HashMap<String, NetNode>();
+        for (String s: other.bayesNet.keySet()){
+            NetNode n = new NetNode(other.bayesNet.get(s));
+            this.bayesNet.put(s, n);
+        }
+        this.QueryBayesBall = new ArrayList<>();
+        this.QueryBayesBall.addAll(other.QueryBayesBall);
+        this.QueryEliminate = new ArrayList<>();
+        this.QueryEliminate.addAll(other.QueryEliminate);
+
+    }
+
     public HashMap<String, NetNode> getBayesNet() {
         return bayesNet;
     }

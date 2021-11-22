@@ -10,6 +10,15 @@ public class CPT implements Comparable<CPT> {
         this.name = name;
         Given = new ArrayList<>();
     }
+    public CPT(CPT other){
+        this.name = other.name;
+        this.Given = new ArrayList<>();
+        this.Given.addAll(other.Given);
+        this.table = new LinkedHashMap<>();
+        for (String s: other.table.keySet()){
+            this.table.put(s, other.table.get(s));
+        }
+    }
 
 
     public void add(String s, Double d){

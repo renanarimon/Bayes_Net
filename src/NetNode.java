@@ -2,13 +2,13 @@ import java.util.*;
 
 public class NetNode {
 
-    private final String Name;
+    private String Name;
     private String Given;
-    private ArrayList<String> outcomes;
     public boolean fromParent;
     public boolean fromChild;
     public ArrayList<String> Children;
     public ArrayList<String> Parents;
+    private ArrayList<String> outcomes;
     private CPT cpt;
 
 
@@ -21,6 +21,19 @@ public class NetNode {
         Parents = new ArrayList<String>();
         this.outcomes = outcomes;
         cpt = new CPT(name);
+    }
+
+    public NetNode(NetNode other){
+        this.Name = other.getName();
+        this.Given = other.Given;
+        this.fromChild = other.fromChild;
+        this.fromParent = other.fromParent;
+        this.Children = new ArrayList<>();
+        this.Children.addAll(other.Children);
+        this.Parents = new ArrayList<>();
+        this.Parents.addAll(other.Parents);
+        this.outcomes = other.outcomes;
+        this.cpt = new CPT(other.cpt);
     }
 
 
