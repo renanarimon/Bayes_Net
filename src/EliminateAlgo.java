@@ -2,7 +2,7 @@ import java.util.*;
 
 public class EliminateAlgo implements EliminateAlgorithem {
     private Net tmpNet;
-    private HashMap<String, CPT> factors;
+    private LinkedHashMap<String, CPT> factors;
     private ArrayList<String> hidden;
     private String query;
     private ArrayList<String> evidence;
@@ -12,8 +12,9 @@ public class EliminateAlgo implements EliminateAlgorithem {
         hidden = new ArrayList<>();
         query = "";
         evidence = new ArrayList<>();
-        this.factors = new HashMap<>();
+        this.factors = new LinkedHashMap<>();
         setFactors();
+        sortFactors();
     }
 
     public HashMap<String, CPT> getFactors() {
@@ -43,6 +44,15 @@ public class EliminateAlgo implements EliminateAlgorithem {
                 str += "-" + s1;
             }
             factors.put(str, this.tmpNet.getBayesNet().get(s).getCpt());
+        }
+    }
+
+    private void sortFactors(){
+        List<Map.Entry<String, CPT>> list = new LinkedList<Map.Entry<String, CPT>>(this.factors.entrySet());
+        Collections.sort(list, Map.Entry.comparingByValue());
+        this.factors.clear();
+        for (Map.Entry<String, CPT> l: list){
+            factors.put(l.getKey(), l.getValue());
         }
     }
 

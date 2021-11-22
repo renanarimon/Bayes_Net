@@ -10,19 +10,20 @@ public class CPT implements Comparable<CPT> {
         this.name = name;
         Given = new ArrayList<>();
     }
-    public CPT(CPT other){
+
+    public CPT(CPT other) {
         this.name = other.name;
         this.Given = new ArrayList<>();
         this.Given.addAll(other.Given);
         this.table = new LinkedHashMap<>();
-        for (String s: other.table.keySet()){
+        for (String s : other.table.keySet()) {
             this.table.put(s, other.table.get(s));
         }
     }
 
 
-    public void add(String s, Double d){
-        table.put(s,d);
+    public void add(String s, Double d) {
+        table.put(s, d);
     }
 
     public LinkedHashMap<String, Double> getTable() {
@@ -33,8 +34,8 @@ public class CPT implements Comparable<CPT> {
         return name;
     }
 
-    public String toString(){
-        if (table.isEmpty()){
+    public String toString() {
+        if (table.isEmpty()) {
             return "[]";
         }
         return table.toString();
@@ -42,31 +43,25 @@ public class CPT implements Comparable<CPT> {
 
     @Override
     public int compareTo(CPT o) {
-        if (this.table.size() < o.table.size()){
+        if (this.table.size() > o.table.size()) {
             return 1;
-        }
-        else if (this.table.size() > o.table.size()){
+        } else if (this.table.size() < o.table.size()) {
             return -1;
-        }
-        else{
+        } else {
             int sumCurr = 0;
-            for(String s: this.Given){
-                for(int i=0; i<s.length(); i++){
-                    int asciiValue = s.charAt(i);
-                    sumCurr += asciiValue;
-                }
+            for (int i = 0; i < this.name.length(); i++) {
+                int asciiValue = this.name.charAt(i);
+                sumCurr += asciiValue;
             }
             int sumO = 0;
-            for(String s: o.Given){
-                for(int i=0; i<s.length(); i++){
-                    int asciiValue = s.charAt(i);
-                    sumCurr += asciiValue;
-                }
+            for (int i = 0; i < o.name.length(); i++) {
+                int asciiValue = o.name.charAt(i);
+                sumCurr += asciiValue;
+
             }
-            if (sumCurr > sumO){
+            if (sumCurr > sumO) {
                 return 1;
-            }
-            else {
+            } else {
                 return -1;
             }
         }
