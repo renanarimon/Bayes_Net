@@ -40,12 +40,12 @@ public class EliminateAlgo {
 
     private void setFactors() {
         for (String s : this.tmpNet.getBayesNet().keySet()) {
-            String str = s;
+            String str = "";
             for (String s1 : this.tmpNet.getBayesNet().get(s).Parents) {
-                str += "-" + s1;
+                str += s1 + "-";
             }
 
-            factors.put(str, this.tmpNet.getBayesNet().get(s).getCpt());
+            factors.put(str+s, this.tmpNet.getBayesNet().get(s).getCpt());
 
         }
     }
@@ -70,9 +70,10 @@ public class EliminateAlgo {
         for (String s: factors.keySet()){ //set cpt's name
             factors.get(s).setName(s);
         }
-        for (String h: hidden){
-            sendToJoin(h);
-        }
+//        for (String h: hidden){
+//            sendToJoin(h);
+//        }
+        sendToJoin("A");
 
 
 //        join();
@@ -210,31 +211,44 @@ public class EliminateAlgo {
     }
 
     private void sendToJoin(String currHidden) {
-        CPT cpt1 = null;
-        CPT cpt2 = null;
-        for (String s : this.factors.keySet()) {
-            if (s.contains(currHidden)) {
-                cpt1 = factors.get(s);
-                break;
-            }
-        }
-        for (String s : this.factors.keySet()) {
-            if (s.contains(currHidden)) {
-                assert cpt1 != null;
-                if (!Objects.equals(cpt1, factors.get(s))) {
-                    cpt2 = factors.get(s);
+        while (true) {
+            CPT cpt1 = null;
+            CPT cpt2 = null;
+            for (String s : this.factors.keySet()) {
+                if (s.contains(currHidden)) {
+                    cpt1 = factors.get(s);
                     break;
                 }
             }
-        }
-        if (cpt1 != null && cpt2 != null) {
-            join(cpt1, cpt2);
-            factors.remove(cpt1.getName());
-            factors.remove(cpt2.getName());
+            for (String s : this.factors.keySet()) {
+                if (s.contains(currHidden)) {
+                    assert cpt1 != null;
+                    if (!Objects.equals(cpt1, factors.get(s))) {
+                        cpt2 = factors.get(s);
+                        break;
+                    }
+                }
+            }
+            if (cpt1 != null && cpt2 != null) {
+                join(cpt1, cpt2);
+                factors.remove(cpt1.getName());
+                factors.remove(cpt2.getName());
+            }
+            else {
+                break;
+            }
         }
 
     }
 
+    /**
+     * join 2 CPT:
+         * build a new factor over the union of hidden variable
+         * add new cpt to 'factors'
+     *
+     * @param cpt1
+     * @param cpt2
+     */
     public void join(CPT cpt1, CPT cpt2) {
         List<String> giv1 = Arrays.asList(cpt1.getName().split("-"));
         List<String> giv2 = Arrays.asList(cpt2.getName().split("-"));
@@ -246,7 +260,8 @@ public class EliminateAlgo {
                 index2.add(giv2.indexOf(s));
             }
         }
-        String tmpName = cpt1.getName(); //new name !!!!
+//        String tmpName = cpt1.compareTo(cpt2) > 0 ? cpt1.getName() : cpt2.getName();
+        String tmpName = cpt1.getName(); //new name
         for (String s : giv2) {
             if (!tmpName.contains(s)) {
                 tmpName += "-" + s;
@@ -267,10 +282,10 @@ public class EliminateAlgo {
                 String currKey1 = ""; //sub-string of key in given index
                 String currKey2 = "";
                 for (int i = 0; i < index1.size(); i++) {
-                    currKey1 += split1[i];
+                    currKey1 += split1[index1.get(i)]; //
                 }
                 for (int i = 0; i < index2.size(); i++) {
-                    currKey2 += split2[i];
+                    currKey2 += split2[index2.get(i)]; //
                 }
                 if (currKey1.equals(currKey2)) { //if equals --> join
                     Double mul = cpt1.getTable().get(s1) * cpt2.getTable().get(s2); // mul 2 rows
@@ -280,8 +295,11 @@ public class EliminateAlgo {
                     for (int i = 0; i < nameArr.length; i++) {
                         if (giv1.contains(nameArr[i])) { //if var is in cpt1
                             k += split1[giv1.indexOf(nameArr[i])];
+                            k = !k.equals("") ? (k+"-") : k;
+
                         } else if (giv2.contains(nameArr[i])) { //if var is in cpt2
                             k += split2[giv2.indexOf(nameArr[i])];
+                            k = !k.equals("") ? (k+"-") : k;
                         }
                     }
                     tmpCpt.add(k, mul);
