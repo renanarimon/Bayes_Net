@@ -16,6 +16,7 @@ public class main {
 //        bayesBall.goOverQ();
         EliminateAlgo eliminateAlgo = new EliminateAlgo(net);
         eliminateAlgo.goOverE();
+        System.out.println(eliminateAlgo.getFactors());
         System.out.println(net);
         System.out.println(eliminateAlgo.getTmpNet());
 

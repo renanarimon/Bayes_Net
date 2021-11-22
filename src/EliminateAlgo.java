@@ -2,6 +2,7 @@ import java.util.*;
 
 public class EliminateAlgo implements EliminateAlgorithem {
     private Net tmpNet;
+    private HashMap<String, CPT> factors;
     private ArrayList<String> hidden;
     private String query;
     private ArrayList<String> evidence;
@@ -11,10 +12,26 @@ public class EliminateAlgo implements EliminateAlgorithem {
         hidden = new ArrayList<>();
         query = "";
         evidence = new ArrayList<>();
+        this.factors = new HashMap<>();
+        setFactors();
+    }
+
+    public HashMap<String, CPT> getFactors() {
+        return factors;
     }
 
     public Net getTmpNet() {
         return tmpNet;
+    }
+
+    private void setFactors(){
+        for (String s: this.tmpNet.getBayesNet().keySet()){
+            String str = s;
+            for (String s1: this.tmpNet.getBayesNet().get(s).Parents){
+                str += "-" + s1;
+            }
+            factors.put(str, this.tmpNet.getBayesNet().get(s).getCpt());
+        }
     }
 
     public ArrayList<String> getHidden() {
@@ -115,13 +132,13 @@ public class EliminateAlgo implements EliminateAlgorithem {
      *
      * @param name
      */
-    public void removeCPT(String name) {
-        for (String s : tmpNet.getBayesNet().keySet()) {
-            if (Objects.equals(s, name) || tmpNet.getBayesNet().get(s).Parents.contains(name)) {
-                tmpNet.getBayesNet().remove(tmpNet.getBayesNet().get(s).getName());
-            }
-        }
-    }
+//    public void removeCPT(String name) {
+//        for (String s : tmpNet.getBayesNet().keySet()) {
+//            if (Objects.equals(s, name) || tmpNet.getBayesNet().get(s).Parents.contains(name)) {
+//                tmpNet.getBayesNet().remove(tmpNet.getBayesNet().get(s).getName());
+//            }
+//        }
+//    }
 
 
     /**
@@ -152,20 +169,21 @@ public class EliminateAlgo implements EliminateAlgorithem {
     public void removeValues(NetNode n, Net tmpNet) {
         Set<String> keySet = n.getCpt().getTable().keySet();
         String[] keyArray = keySet.toArray(new String[keySet.size()]);
-        if (n.getGiven() != null && !Objects.equals(n.getName(), query)) {
-            for(String s: keyArray){ //go over every key
-                String[] split = s.split("-");
-                if (!Objects.equals(split[split.length - 1], n.getGiven())){ //remove all keys that not given
-                    n.getCpt().getTable().remove(s);
+        if (!Objects.equals(n.getName(), query)) {
+            if (n.getGiven() != null) {
+                for (String s : keyArray) { //go over every key
+                    String[] split = s.split("-");
+                    if (!Objects.equals(split[split.length - 1], n.getGiven())) { //remove all keys that not given
+                        n.getCpt().getTable().remove(s);
+                    }
                 }
-            }
 
-        }
-        else {
-            for(String s: keyArray){ //go over every key
-                String[] split = s.split("-");
-                if (Objects.equals(split[split.length - 1], n.getOutcomes().get(n.getOutcomes().size()-1))){ //remove all all complementary values
-                    n.getCpt().getTable().remove(s);
+            } else {
+                for (String s : keyArray) { //go over every key
+                    String[] split = s.split("-");
+                    if (Objects.equals(split[split.length - 1], n.getOutcomes().get(n.getOutcomes().size() - 1))) { //remove all all complementary values
+                        n.getCpt().getTable().remove(s);
+                    }
                 }
             }
         }
