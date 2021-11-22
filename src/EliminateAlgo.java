@@ -67,18 +67,14 @@ public class EliminateAlgo {
         for (NetNode n : tmpNet.getBayesNet().values()) {  //remove evidence
             removeValues(n, tmpNet);
         }
-        for (String s: factors.keySet()){ //set cpt's name
+        for (String s: factors.keySet()){ //set CPTs name
             factors.get(s).setName(s);
         }
-//        for (String h: hidden){
-//            sendToJoin(h);
-//        }
-        sendToJoin("A");
-
-
-//        join();
-//        eliminate();
-
+        for (String h: hidden){
+            CPT tmpCpt;
+            tmpCpt = sendToJoin(h);
+            eliminate(tmpCpt, h);
+        }
     }
 
     /**
@@ -210,7 +206,14 @@ public class EliminateAlgo {
 
     }
 
-    private void sendToJoin(String currHidden) {
+    /**
+     * go over every 2 CPTs that contains 'currHidden',
+     * and send them to join().
+     * after join --> remove from 'factors'
+     * @param currHidden = hidden var
+     */
+    private CPT sendToJoin(String currHidden) {
+        CPT tmpCpt = null;
         while (true) {
             CPT cpt1 = null;
             CPT cpt2 = null;
@@ -230,14 +233,16 @@ public class EliminateAlgo {
                 }
             }
             if (cpt1 != null && cpt2 != null) {
-                join(cpt1, cpt2);
+                tmpCpt = join(cpt1, cpt2);
                 factors.remove(cpt1.getName());
                 factors.remove(cpt2.getName());
+                System.out.println("join: " + factors);
             }
             else {
                 break;
             }
         }
+        return tmpCpt;
 
     }
 
@@ -249,9 +254,11 @@ public class EliminateAlgo {
      * @param cpt1
      * @param cpt2
      */
-    public void join(CPT cpt1, CPT cpt2) {
+    public CPT join(CPT cpt1, CPT cpt2) {
         List<String> giv1 = Arrays.asList(cpt1.getName().split("-"));
         List<String> giv2 = Arrays.asList(cpt2.getName().split("-"));
+
+        // save indexes of given
         ArrayList<Integer> index1 = new ArrayList<>();
         ArrayList<Integer> index2 = new ArrayList<>();
         for (String s : giv1) {
@@ -260,21 +267,24 @@ public class EliminateAlgo {
                 index2.add(giv2.indexOf(s));
             }
         }
-//        String tmpName = cpt1.compareTo(cpt2) > 0 ? cpt1.getName() : cpt2.getName();
-        String tmpName = cpt1.getName(); //new name
+
+        // cpt name
+        String tmpName = cpt1.getName();
         for (String s : giv2) {
             if (!tmpName.contains(s)) {
                 tmpName += "-" + s;
             }
         }
+        // initialize CPT
         CPT tmpCpt = new CPT(tmpName); //create new CPT with joined name
 
+        //create array of keys e.g. [T-T, T-F]
         Set<String> key1 = cpt1.getTable().keySet();
         String[] keyArr1 = key1.toArray(new String[key1.size()]);
-
         Set<String> key2 = cpt2.getTable().keySet();
         String[] keyArr2 = key2.toArray(new String[key2.size()]);
 
+        // for each key -> if 2 keys have same 'given' -> join
         for (String s1 : keyArr1) {
             String[] split1 = s1.split("-"); //curr key of cpt1 e.g. [T,F]
             for (String s2 : keyArr2) {
@@ -287,11 +297,15 @@ public class EliminateAlgo {
                 for (int i = 0; i < index2.size(); i++) {
                     currKey2 += split2[index2.get(i)]; //
                 }
-                if (currKey1.equals(currKey2)) { //if equals --> join
-                    Double mul = cpt1.getTable().get(s1) * cpt2.getTable().get(s2); // mul 2 rows
-                    String k = ""; //key of new row
-                    String[] nameArr = tmpName.split("-");
 
+                //if equals --> join
+                if (currKey1.equals(currKey2)) {
+                    // mul 2 rows
+                    Double mul = cpt1.getTable().get(s1) * cpt2.getTable().get(s2);
+
+                    //key of new row
+                    String k = "";
+                    String[] nameArr = tmpName.split("-");
                     for (int i = 0; i < nameArr.length; i++) {
                         if (giv1.contains(nameArr[i])) { //if var is in cpt1
                             k += split1[giv1.indexOf(nameArr[i])];
@@ -302,17 +316,75 @@ public class EliminateAlgo {
                             k = !k.equals("") ? (k+"-") : k;
                         }
                     }
+                    k = k.length()>0 ? k.substring(0, k.length()-1) : k;
                     tmpCpt.add(k, mul);
                 }
 
             }
         }
         factors.put(tmpName, tmpCpt);
+        removeIfOneValued(tmpCpt);
         this.sortFactors();
+        return tmpCpt;
     }
 
-    public CPT eliminate(CPT cpt1, String var) {
-        return null;
+    /**
+     * remove one valued cpt from 'factors'
+     */
+    private void removeIfOneValued(CPT cpt){
+        if (cpt.getTable().size()==1){
+            factors.remove(cpt.getName());
+        }
+    }
+
+    /**
+     * Eliminate Hidden var from CPT:
+     * Sum up all the complementary lines of the hidden variable
+     * @param cpt
+     * @param currHidden
+     */
+    public void eliminate(CPT cpt, String currHidden) {
+        //create array of keys e.g. [T-T, T-F]
+        Set<String> key = cpt.getTable().keySet();
+        String[] keyArr = key.toArray(new String[key.size()]);
+
+        String[] g = cpt.getName().split("-");
+        List<String> giv = Arrays.asList(g);
+//        List<String> giv = Arrays.asList(cpt.getName().split("-"));
+        int indexH = giv.indexOf(currHidden);
+
+        //CPTs new name - without currHidden NOTE: can be null!
+        String tmpName = cpt.getName().substring(0, indexH) + cpt.getName().substring(indexH+2);
+        System.out.println(tmpName);
+//        String tmpName = cpt.getName().replace(currHidden, "");
+//        tmpName = tmpName.length()>0 ? tmpName.substring(1) : tmpName;
+        CPT tmpCpt = new CPT(tmpName);
+        int numOfOutcomes = this.tmpNet.getBayesNet().get(currHidden).getOutcomes().size();
+        for(int i=0; i< keyArr.length/numOfOutcomes; i++){
+            String currKey1 = "";
+            String[]split1 = keyArr[i].split("-");
+            for (int j = 0; j < split1.length; j++) {
+                currKey1 += (j != indexH) ? split1[j] : "";
+            }
+            for(int j=i+1; j< keyArr.length; j++){
+                String currKey2 = "";
+                String[]split2 = keyArr[j].split("-");
+                for (int k = 0; k < split2.length; k++) {
+                    currKey2 += (k != indexH) ? split2[k] : "";
+                    if (currKey1.equals(currKey2)){
+                        Double sum = cpt.getTable().get(keyArr[i]) + cpt.getTable().get(keyArr[j]);
+                        tmpCpt.add(currKey1, sum);
+                        break;
+                    }
+                }
+
+            }
+        }
+        factors.put(tmpName, tmpCpt);
+        factors.remove(cpt.getName());
+        this.sortFactors();
+        System.out.println("eliminate:"+ factors);
+
     }
 
 
