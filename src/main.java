@@ -4,6 +4,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class main {
 
@@ -17,8 +18,10 @@ public class main {
         EliminateAlgo eliminateAlgo = new EliminateAlgo(net);
         eliminateAlgo.goOverE();
         System.out.println(eliminateAlgo.getFactors());
-        System.out.println(net);
         System.out.println(eliminateAlgo.getTmpNet());
+        System.out.println(eliminateAlgo.getEvidence());
+
+
 
 
 

@@ -21,6 +21,9 @@ public class CPT implements Comparable<CPT> {
         }
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public void add(String s, Double d) {
         table.put(s, d);
@@ -41,6 +44,12 @@ public class CPT implements Comparable<CPT> {
         return table.toString();
     }
 
+    /**
+     * compare CPT by size.
+         * if size is equals --> compare by ASCII
+     * @param o = cpt
+     * @return
+     */
     @Override
     public int compareTo(CPT o) {
         if (this.table.size() > o.table.size()) {
