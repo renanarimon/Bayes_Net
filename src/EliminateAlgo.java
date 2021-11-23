@@ -355,7 +355,6 @@ public class EliminateAlgo {
 
         //CPTs new name - without currHidden NOTE: can be null!
         String tmpName = cpt.getName().substring(0, indexH) + cpt.getName().substring(indexH+2);
-        System.out.println(tmpName);
 //        String tmpName = cpt.getName().replace(currHidden, "");
 //        tmpName = tmpName.length()>0 ? tmpName.substring(1) : tmpName;
         CPT tmpCpt = new CPT(tmpName);
@@ -365,14 +364,18 @@ public class EliminateAlgo {
             String[]split1 = keyArr[i].split("-");
             for (int j = 0; j < split1.length; j++) {
                 currKey1 += (j != indexH) ? split1[j] : "";
+                currKey1 = !currKey1.equals("") ? (currKey1+"-") : currKey1;
             }
             for(int j=i+1; j< keyArr.length; j++){
                 String currKey2 = "";
                 String[]split2 = keyArr[j].split("-");
                 for (int k = 0; k < split2.length; k++) {
                     currKey2 += (k != indexH) ? split2[k] : "";
+                    currKey2 = !currKey2.equals("") ? (currKey2+"-") : currKey2;
+
                     if (currKey1.equals(currKey2)){
                         Double sum = cpt.getTable().get(keyArr[i]) + cpt.getTable().get(keyArr[j]);
+                        currKey1 = currKey1.length()>0 ? currKey1.substring(0, currKey1.length()-1) : currKey1;
                         tmpCpt.add(currKey1, sum);
                         break;
                     }
