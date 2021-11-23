@@ -19,7 +19,6 @@ public class main {
         EliminateAlgo eliminateAlgo = new EliminateAlgo(net);
         eliminateAlgo.goOverE();
 
-        System.out.println(eliminateAlgo.getFactors());
 
 
 

@@ -75,6 +75,9 @@ public class EliminateAlgo {
             tmpCpt = sendToJoin(h);
             eliminate(tmpCpt, h);
         }
+        CPT ans = sendToJoin(query);
+        normalize(ans);
+        System.out.println("norm: "+factors);
     }
 
     /**
@@ -355,8 +358,6 @@ public class EliminateAlgo {
 
         //CPTs new name - without currHidden NOTE: can be null!
         String tmpName = cpt.getName().substring(0, indexH) + cpt.getName().substring(indexH+2);
-//        String tmpName = cpt.getName().replace(currHidden, "");
-//        tmpName = tmpName.length()>0 ? tmpName.substring(1) : tmpName;
         CPT tmpCpt = new CPT(tmpName);
         int numOfOutcomes = this.tmpNet.getBayesNet().get(currHidden).getOutcomes().size();
         for(int i=0; i< keyArr.length/numOfOutcomes; i++){
@@ -391,7 +392,20 @@ public class EliminateAlgo {
     }
 
 
-    public CPT normalize(CPT cpt1) {
-        return null;
+    /**
+     * normalize values in last CPT:
+     * normVal = currVal/sum(allVal)
+     * @param cpt1 = last CPT
+     */
+    public void normalize(CPT cpt1) {
+        Double norm = 0.0;
+        for (Double d: cpt1.getTable().values()){
+            norm += d;
+        }
+        for (String s: cpt1.getTable().keySet()){
+            Double tmp = cpt1.getTable().get(s)/ norm;
+            cpt1.add(s, tmp);
+        }
+
     }
 }
