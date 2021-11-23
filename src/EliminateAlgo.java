@@ -9,6 +9,8 @@ public class EliminateAlgo {
     private ArrayList<String> hidden;
     private String query;
     private ArrayList<String> evidence;
+    private int mult;
+    private int sum;
 
     public EliminateAlgo(Net net) {
         this.tmpNet = new Net(net);
@@ -16,8 +18,18 @@ public class EliminateAlgo {
         query = "";
         evidence = new ArrayList<>();
         this.factors = new LinkedHashMap<>();
+        this.mult =0;
+        this.sum = 0;
         setFactors();
         sortFactors();
+    }
+
+    public void setMult(int mult) {
+        this.mult = mult;
+    }
+
+    public void setSum(int sum) {
+        this.sum = sum;
     }
 
     public HashMap<String, CPT> getFactors() {
@@ -53,7 +65,7 @@ public class EliminateAlgo {
     }
 
     private void sortFactors() {
-        List<Map.Entry<String, CPT>> list = new LinkedList<Map.Entry<String, CPT>>(this.factors.entrySet());
+        List<Map.Entry<String, CPT>> list = new LinkedList<>(this.factors.entrySet());
         Collections.sort(list, Map.Entry.comparingByValue());
         this.factors.clear();
         for (Map.Entry<String, CPT> l : list) {
@@ -96,6 +108,8 @@ public class EliminateAlgo {
         String answer = df.format(ans);
 
         System.out.println(answer);
+        System.out.println("mul: "+ this.mult);
+        System.out.println("sum: "+ this.sum);
 
     }
 
@@ -324,7 +338,7 @@ public class EliminateAlgo {
                 if (currKey1.equals(currKey2)) {
                     // mul 2 rows
                     Double mul = cpt1.getTable().get(s1) * cpt2.getTable().get(s2);
-
+                    setMult(mult+1);
                     //key of new row
                     String k = "";
                     String[] nameArr = tmpName.split("-");
@@ -394,9 +408,10 @@ public class EliminateAlgo {
                     currKey2 = !currKey2.equals("") ? (currKey2+"-") : currKey2;
 
                     if (currKey1.equals(currKey2)){
-                        Double sum = cpt.getTable().get(keyArr[i]) + cpt.getTable().get(keyArr[j]);
+                        Double sum1 = cpt.getTable().get(keyArr[i]) + cpt.getTable().get(keyArr[j]);
+                        setSum(sum+1);
                         currKey1 = currKey1.length()>0 ? currKey1.substring(0, currKey1.length()-1) : currKey1;
-                        tmpCpt.add(currKey1, sum);
+                        tmpCpt.add(currKey1, sum1);
                         break;
                     }
                 }
