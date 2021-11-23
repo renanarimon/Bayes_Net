@@ -1,4 +1,6 @@
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class EliminateAlgo {
@@ -88,7 +90,12 @@ public class EliminateAlgo {
         wanted = wanted.substring(0, wanted.length()-1);
 
         Double ans = cptFinal.getTable().get(wanted);
-        System.out.println(ans);
+
+        DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.HALF_EVEN);
+        String answer = df.format(ans);
+
+        System.out.println(answer);
 
     }
 
