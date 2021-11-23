@@ -75,9 +75,21 @@ public class EliminateAlgo {
             tmpCpt = sendToJoin(h);
             eliminate(tmpCpt, h);
         }
-        CPT ans = sendToJoin(query);
-        normalize(ans);
+        CPT cptFinal = sendToJoin(query);
+        normalize(cptFinal);
         System.out.println("norm: "+factors);
+
+        String wanted = "";
+        String[] split = cptFinal.getName().split("-");
+        for (String s: split){
+            String tmp = this.tmpNet.getBayesNet().get(s).getGiven();
+            wanted += tmp + "-";
+        }
+        wanted = wanted.substring(0, wanted.length()-1);
+
+        Double ans = cptFinal.getTable().get(wanted);
+        System.out.println(ans);
+
     }
 
     /**
