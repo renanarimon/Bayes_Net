@@ -17,7 +17,7 @@ public class main {
         BayesBall bayesBall = new BayesBall(net);
         bayesBall.goOverQ();
         EliminateAlgo eliminateAlgo = new EliminateAlgo(net);
-        eliminateAlgo.goOverE();
+        eliminateAlgo.goOverE(net);
 
 
 
