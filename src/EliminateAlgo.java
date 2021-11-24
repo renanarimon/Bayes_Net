@@ -59,9 +59,7 @@ public class EliminateAlgo {
             for (String s1 : this.tmpNet.getBayesNet().get(s).Parents) {
                 str += s1 + "-";
             }
-
             factors.put(str + s, this.tmpNet.getBayesNet().get(s).getCpt());
-
         }
     }
 
@@ -90,12 +88,14 @@ public class EliminateAlgo {
             factors.get(s).setName(s); //set CPTs name
             removeIfOneValued(factors.get(s));
         }
+
+        System.out.println(factors);
         CPT tmpCpt;
         for (String h : hidden) {
             tmpCpt = sendToJoin(h);
-            if (tmpCpt == null){
-                for (String hid: factors.keySet()){
-                    if (hid.contains(h)){
+            if (tmpCpt == null) {
+                for (String hid : factors.keySet()) {
+                    if (hid.contains(h)) {
                         tmpCpt = factors.get(hid);
                     }
                 }
@@ -128,11 +128,11 @@ public class EliminateAlgo {
 
         Double ans = cptFinal.getTable().get(wanted);
 
-        DecimalFormat df = new DecimalFormat("#.#####");
-        df.setRoundingMode(RoundingMode.HALF_EVEN);
-        String answer = df.format(ans);
+        BigDecimal big = new BigDecimal(ans).setScale(5,RoundingMode.HALF_UP);
 
-        System.out.println(answer);
+
+
+        System.out.println(big);
         System.out.println("mul: " + this.mult);
         System.out.println("sum: " + this.sum);
 
@@ -197,21 +197,47 @@ public class EliminateAlgo {
     private void notRelevant() {
         BayesBall bayesBall = new BayesBall(tmpNet);
         boolean flag = true; // true --> remove
-        for (String s : hidden) {
-            for (String e : evidence) {
-                if (isAncestor(tmpNet.getBayesNet().get(s), tmpNet.getBayesNet().get(query)) ||
-                        (isAncestor(tmpNet.getBayesNet().get(s), tmpNet.getBayesNet().get(e)))) {
-                    flag = false;
-                    break;
-                } else if (Objects.equals(bayesBall.dfs(tmpNet.getBayesNet().get(query), tmpNet.getBayesNet().get(s)), "no")) {
-                    flag = false;
-                    break;
+
+        // if is NOT ancestor --> remove
+        String[] hiddenArray = hidden.toArray(new String[hidden.size()]);
+        for (String h : hiddenArray) {
+            //if h *isAncestor* of query --> NOT remove
+            if (!isAncestor(tmpNet.getBayesNet().get(h), tmpNet.getBayesNet().get(query))) {
+                for (String e : evidence) {
+                    // if h is ancestor of any e --> NOT remove
+                    if (isAncestor(tmpNet.getBayesNet().get(h), tmpNet.getBayesNet().get(e))) {
+                        flag = false;
+                        break;
+                    }
                 }
+            }else {
+                flag=false;
+            }
+            // if h is NOT Ancestor of query or evidence --> remove
+
+//        }
+
+        // if independent on query --> remove *every* factor 'h' in it
+//        String[] hiddenArray1 = hidden.toArray(new String[hidden.size()]);
+//        for (String h : hiddenArray1) {
+            if (Objects.equals(bayesBall.dfs(tmpNet.getBayesNet().get(query), tmpNet.getBayesNet().get(h)), "yes")) {
+                factors.remove(h);
             }
             if (flag) {
-                tmpNet.getBayesNet().remove(s);
-            } else {
-                flag = true;
+                removeContainsNotRelevant(h);
+            }
+            flag = true;
+
+        }
+    }
+
+    private void removeContainsNotRelevant(String h) {
+        hidden.remove(h);
+        Set<String> factorsKeySet = factors.keySet();
+        String[] factorsArray = factorsKeySet.toArray(new String[factorsKeySet.size()]);
+        for (String f : factorsArray) {
+            if (f.contains(h)) {
+                factors.remove(f);
             }
         }
     }
@@ -272,6 +298,44 @@ public class EliminateAlgo {
             }
         }
 
+    }
+
+    public void removeValues1(NetNode n, Net tmpNet) {
+        Set<String> keySet = n.getCpt().getTable().keySet();
+        String[] keyArray = keySet.toArray(new String[keySet.size()]);
+        if (n.getGiven() != null && !Objects.equals(n.getName(), query)) {
+            for (String s : keyArray) { //go over every key
+                String[] split = s.split("-");
+                if (!Objects.equals(split[split.length - 1], n.getGiven())) { //remove all keys that not given
+                    n.getCpt().getTable().remove(s);
+                }
+            }
+
+        } else {
+            for (String s : keyArray) { //go over every key
+                String[] split = s.split("-");
+                if (Objects.equals(split[split.length - 1], n.getOutcomes().get(n.getOutcomes().size() - 1))) { //remove all all complementary values
+                    n.getCpt().getTable().remove(s);
+                }
+            }
+        }
+        int i = 0;
+        if (n.Parents.size() > 0) {
+            for (String p : n.Parents) {
+                if (tmpNet.getBayesNet().containsKey(p)) {
+                    NetNode parent = tmpNet.getBayesNet().get(p);
+                    if (parent.getGiven() != null) {
+                        for (String s : keyArray) { //go over every key
+                            String[] split = s.split("-");
+                            if (!Objects.equals(split[i], parent.getGiven())) {
+                                n.getCpt().getTable().remove(s);
+                            }
+                        }
+                    }
+                    i++;
+                }
+            }
+        }
 
     }
 

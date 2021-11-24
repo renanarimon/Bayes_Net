@@ -6,7 +6,7 @@ public class BayesBall {
     private Stack<NetNode> stack;
 
     public BayesBall(Net net){
-        this.stack = new Stack<NetNode>();
+        this.stack = new Stack<>();
         this.net = net;
     }
 
