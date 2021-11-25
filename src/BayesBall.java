@@ -1,16 +1,35 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class BayesBall {
     private Net net;
     private Stack<NetNode> stack;
+    private ArrayList<String> ansBayesBall;
 
     public BayesBall(Net net){
         this.stack = new Stack<>();
         this.net = net;
+        ansBayesBall = new ArrayList<>();
     }
 
+    public ArrayList<String> getAnsBayesBall() {
+        return ansBayesBall;
+    }
 
+    /**
+     * clean net before new quarry
+     */
+    private void cleanNet(){
+        this.stack.clear();
+        for (NetNode n : net.getBayesNet().values()) {
+            n.fromChild = false;
+            n.fromParent = false;
+        }
+    }
+
+    /**
+     * go over the bayesBall Querys, parse and send to dfs
+     */
     public void goOverQ() {
         for (int i = 0; i < net.getQueryBayesBall().size(); i++) {
             for (NetNode n : net.getBayesNet().values()) {
@@ -33,8 +52,7 @@ public class BayesBall {
                     net.getBayesNet().get(tmp[0]).setGiven(tmp[1]);
                 }
             }
-
-            System.out.println(dfs(start, end));
+            this.ansBayesBall.add(dfs(start, end));
 
 
         }
@@ -78,14 +96,7 @@ public class BayesBall {
         return "yes"; // no path --> not depended
     }
 
-    private void cleanNet(){
-        this.stack.clear();
-        for (NetNode n : net.getBayesNet().values()) {
-//            n.setGiven(null);
-            n.fromChild = false;
-            n.fromParent = false;
-        }
-    }
+
 
     /**
      * help function for dfs():

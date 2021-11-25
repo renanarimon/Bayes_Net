@@ -10,6 +10,7 @@ public class EliminateAlgo {
     private ArrayList<String> evidence;
     private int mult;
     private int sum;
+    private ArrayList<String> ansEliminate;
 
     public EliminateAlgo(Net net) {
         this.tmpNet = new Net(net);
@@ -21,6 +22,7 @@ public class EliminateAlgo {
         this.sum = 0;
         setFactors();
         sortFactors();
+        ansEliminate = new ArrayList<>();
     }
 
 
@@ -32,7 +34,9 @@ public class EliminateAlgo {
         this.sum = sum;
     }
 
-
+    public ArrayList<String> getAnsEliminate() {
+        return ansEliminate;
+    }
 
     /**
      * put in HashMap 'factors': (name, cpt)
@@ -63,10 +67,10 @@ public class EliminateAlgo {
      */
     private void answerQ() {
         setFactors();
-//        System.out.println("net: " + this.tmpNet);
-//        System.out.println("after setFactors: " + factors);
-        notRelevant(); // remove not relevant factors
+        System.out.println("after setFactors: "+ factors);
 
+        notRelevant(); // remove not relevant factors
+        System.out.println("after notRelevant "+ factors);
         Set<String> keySet = factors.keySet();
         String[] keyArray = keySet.toArray(new String[keySet.size()]);
 
@@ -78,6 +82,8 @@ public class EliminateAlgo {
         for (NetNode n : tmpNet.getBayesNet().values()) {  //remove evidence
             removeValues(n, tmpNet);
         }
+        System.out.println("after removeValues "+ factors);
+        System.out.println(tmpNet);
 
         CPT tmpCpt;
         for (String h : hidden) {
@@ -90,6 +96,7 @@ public class EliminateAlgo {
                 }
             }
             eliminate(tmpCpt, h);
+            System.out.println("after eliminate "+ factors);
             removeIfOneValued(tmpCpt);
         }
 
@@ -104,8 +111,6 @@ public class EliminateAlgo {
         }
         normalize(cptFinal);
 
-
-
         String wanted = "";
         String[] split = cptFinal.getName().split("-");
         for (String s : split) {
@@ -118,9 +123,7 @@ public class EliminateAlgo {
 
         BigDecimal ansFinal = new BigDecimal(ans).setScale(5, RoundingMode.HALF_UP);
 
-
-        System.out.println(ansFinal + "," + sum + "," + mult);
-
+        this.ansEliminate.add(ansFinal + "," + sum + "," + mult);
     }
 
     /**
@@ -150,7 +153,6 @@ public class EliminateAlgo {
                     }
                 }
             }
-//            System.out.println("before answerQ: " + factors);
             answerQ();
         }
     }
@@ -256,7 +258,7 @@ public class EliminateAlgo {
      * remove from CPT that contains evidencs:
      * remove every NOT given lines
      *
-     * @param n      = NetNode
+     * @param n = NetNode
      * @param tmpNet
      */
     public void removeValues(NetNode n, Net tmpNet) {
@@ -316,7 +318,6 @@ public class EliminateAlgo {
             }
             if (cpt1 != null && cpt2 != null) {
                 tmpCpt = join(cpt1, cpt2);
-//                System.out.println("join: " + factors);
             } else {
                 break;
             }
@@ -407,6 +408,8 @@ public class EliminateAlgo {
         factors.put(tmpName, tmpCpt);
         removeIfOneValued(tmpCpt);
         this.sortFactors();
+        System.out.println("join "+ factors);
+
         return tmpCpt;
     }
 
@@ -445,7 +448,7 @@ public class EliminateAlgo {
         }
         tmpName = tmpName.substring(0, tmpName.length()-1);
         CPT tmpCpt = new CPT(tmpName);
-        int numOfOutcomes = this.tmpNet.getBayesNet().get(currHidden).getOutcomes().size();
+//        int numOfOutcomes = this.tmpNet.getBayesNet().get(currHidden).getOutcomes().size();
         for (int i = 0; i < keyArr.length; i++) {
             String currKey1 = "";
             String[] split1 = keyArr[i].split("-");
@@ -476,8 +479,6 @@ public class EliminateAlgo {
         factors.remove(cpt.getName());
         factors.put(tmpName, tmpCpt);
         this.sortFactors();
-//        System.out.println("eliminate:" + factors);
-
     }
 
 
@@ -492,6 +493,7 @@ public class EliminateAlgo {
         for (Double d : cpt1.getTable().values()) {
             norm += d;
         }
+        setSum(sum+1);
         for (String s : cpt1.getTable().keySet()) {
             Double tmp = cpt1.getTable().get(s) / norm;
             cpt1.add(s, tmp);

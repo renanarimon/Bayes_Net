@@ -176,7 +176,7 @@ public class Net {
             for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
                 for (String s1 : curr.getOutcomes()) {
                     if (!Objects.equals(st, "")){
-                        curr.getCpt().add(st+"-" + s+"-" + s1, arr.get(j++));
+                        curr.getCpt().add(st+ s+"-" + s1, arr.get(j++));
                     }else {
                         curr.getCpt().add(st + s+"-" + s1, arr.get(j++));
                     }
@@ -186,19 +186,11 @@ public class Net {
             return j;
         }
         for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
-            st = s;
-            j = rec(st, j, k+1, curr, arr);
+//            st += s + "-";
+            j = rec(st+s+"-", j, k+1, curr, arr);
         }
         return j;
     }
-
-//    public void remove(String name){
-//        for (NetNode n: bayesNet.values()){
-//            if (Objects.equals(n.getName(), name) || n.Parents.contains(name)){
-//                bayesNet.remove(n.getName());
-//            }
-//        }
-//    }
 
 
     public String toString() {
