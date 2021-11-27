@@ -1,3 +1,7 @@
+/*
+ * @project AI_algo_ex
+ * @author Renana Rimon
+ */
 import java.util.*;
 
 public class NetNode {
@@ -57,47 +61,6 @@ public class NetNode {
     public String getName() {
         return Name;
     }
-
-//    public void removeValues(Net net) {
-//        Set<String> keySet = cpt.getTable().keySet();
-//        String[] keyArray = keySet.toArray(new String[keySet.size()]);
-//        if (Given != null) {
-//            for(String s: keyArray){ //go over every key
-//                String[] split = s.split("-");
-//                if (!Objects.equals(split[split.length - 1], Given)){ //remove all keys that not given
-//                    cpt.getTable().remove(s);
-//                }
-//            }
-//
-//        }
-//        else {
-//            for(String s: keyArray){ //go over every key
-//                String[] split = s.split("-");
-//                if (Objects.equals(split[split.length - 1], outcomes.get(outcomes.size()-1))){ //remove all all complementary values
-//                    cpt.getTable().remove(s);
-//                }
-//            }
-//        }
-//        int i=0;
-//        if (Parents.size()>0){
-//            for (String p: Parents){
-//                if (net.getBayesNet().containsKey(p)){
-//                    NetNode parent = net.getBayesNet().get(p);
-//                    if (parent.Given != null){
-//                        for(String s: keyArray){ //go over every key
-//                            String[] split = s.split("-");
-//                            if (!Objects.equals(split[i], parent.Given)){
-//                                cpt.getTable().remove(s);
-//                            }
-//                        }
-//                    }
-//                    i++;
-//                }
-//                }
-//        }
-//
-//    }
-
 
     @Override
     public String toString() {

@@ -1,3 +1,7 @@
+/*
+ * @project AI_algo_ex
+ * @auther Renana Rimon
+ */
 import java.util.*;
 
 public class CPT implements Comparable<CPT> {
@@ -11,6 +15,9 @@ public class CPT implements Comparable<CPT> {
         Given = new ArrayList<>();
     }
 
+    /*
+    copy constructor
+     */
     public CPT(CPT other) {
         this.name = other.name;
         this.Given = new ArrayList<>();
@@ -46,7 +53,7 @@ public class CPT implements Comparable<CPT> {
 
     /**
      * compare CPT by size.
-         * if size is equals --> compare by ASCII
+     * if size is equals --> compare by ASCII
      * @param o = cpt
      * @return
      */

@@ -1,3 +1,7 @@
+/*
+ * @project AI_algo_ex
+ * @author Renana Rimon
+ */
 import java.util.ArrayList;
 import java.util.Stack;
 

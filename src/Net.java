@@ -1,3 +1,7 @@
+/*
+ * @project AI_algo_ex
+ * @author Renana Rimon
+ */
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -8,7 +12,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,12 +24,15 @@ public class Net {
     private ArrayList<String> QueryEliminate;
 
     public Net() {
-        this.bayesNet = new HashMap<String, NetNode>();
-        this.QueryBayesBall = new ArrayList<String>();
-        this.QueryEliminate = new ArrayList<String>();
+        this.bayesNet = new HashMap<>();
+        this.QueryBayesBall = new ArrayList<>();
+        this.QueryEliminate = new ArrayList<>();
 
     }
 
+    /*
+    copy constructor
+     */
     public Net(Net other){
         this.bayesNet = new HashMap<String, NetNode>();
         for (String s: other.bayesNet.keySet()){
@@ -163,7 +169,7 @@ public class Net {
     }
 
     /**
-     * A recursive function that adds the Double value to the CPT according to the exact string key.
+     * A recursive function that adds the values to the CPT according to the exact string key.
      * @param st = string of outcomes
      * @param j = index on arr
      * @param k = index on parents
@@ -186,7 +192,6 @@ public class Net {
             return j;
         }
         for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
-//            st += s + "-";
             j = rec(st+s+"-", j, k+1, curr, arr);
         }
         return j;
