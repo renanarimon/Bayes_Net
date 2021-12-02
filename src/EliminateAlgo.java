@@ -1,19 +1,21 @@
 /*
  * @project AI_algo_ex
  * @author Renana Rimon
+ *
  */
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
 public class EliminateAlgo {
-    private Net tmpNet;
+    private Net tmpNet; //copy of Net
     private LinkedHashMap<String, CPT> factors;
     private ArrayList<String> hidden;
     private String query;
     private ArrayList<String> evidence;
-    private int mult;
-    private int sum;
+    private int mult; //Summarize the multiplication operation
+    private int sum; //Summarize the addition operation
     private ArrayList<String> ansEliminate;
 
     public EliminateAlgo(Net net) {
@@ -51,44 +53,50 @@ public class EliminateAlgo {
             String q = tmpNet.getQueryEliminate().get(i);
             String[] splitE;
             splitE = q.split(" ");
-            String[] tmphidden = splitE[1].split("-"); //hidden vars
-            Collections.addAll(hidden, tmphidden);
+            if (splitE.length > 1) {
+                String[] tmphidden = splitE[1].split("-"); //hidden vars
+                Collections.addAll(hidden, tmphidden);
+            }
             String p = splitE[0].substring(splitE[0].indexOf("(") + 1, splitE[0].indexOf(")"));
             String[] splitP = p.split("\\|");
             String[] splitQ = splitP[0].split("=");
             query = splitQ[0];
-            tmpNet.getBayesNet().get(query).setGiven(splitQ[1]);
+            if (query == "") {
+                this.getAnsEliminate().add("");
+            } else {
+                tmpNet.getBayesNet().get(query).setGiven(splitQ[1]);
 
-            if (splitP.length > 1) {
-                String[] e = splitP[1].split(",");
-                for (String s : e) {
-                    String[] tmp = s.split("=");
-                    if (tmp[0] != null) {
-                        evidence.add(tmp[0]);
-                        tmpNet.getBayesNet().get(tmp[0]).setGiven(tmp[1]);
+                if (splitP.length > 1) {
+                    String[] e = splitP[1].split(",");
+                    for (String s : e) {
+                        String[] tmp = s.split("=");
+                        if (tmp[0] != null) {
+                            evidence.add(tmp[0]);
+                            tmpNet.getBayesNet().get(tmp[0]).setGiven(tmp[1]);
+                        }
                     }
                 }
+                answerQ();
             }
-            answerQ();
+
         }
     }
 
 
     /**
      * main function:
-         * set Factors
-         * remove not Relevant factors
-         * set CPTs name
-         * remove CPTs with one value
-         * removeValues - remove unnecessary rows
-         * for each hidden:
-             * join
-             * eliminate
-             * remove CPTs with one value
-         * join last CPTs to one
-         * normalize
-         * find ans
-     *
+     * set Factors
+     * remove not Relevant factors
+     * set CPTs name
+     * remove CPTs with one value
+     * removeValues - remove unnecessary rows
+     * for each hidden:
+     * join
+     * eliminate
+     * remove CPTs with one value
+     * join last CPTs to one
+     * normalize
+     * find ans
      */
     private void answerQ() {
         setFactors();
@@ -129,7 +137,7 @@ public class EliminateAlgo {
             }
             cptFinal = factors.get(k);
         }
-        if(mult != 0){
+        if (mult != 0) {
             normalize(cptFinal);
         }
 
@@ -220,7 +228,7 @@ public class EliminateAlgo {
             // if independent on query --> remove *every* factor 'h' in it
 
             if (Objects.equals(bayesBall.dfs(tmpNet.getBayesNet().get(query), tmpNet.getBayesNet().get(h)), "yes")) {
-                removeContainsNotRelevant(h);
+                flag = true;
             }
             if (flag) {
                 removeContainsNotRelevant(h);
@@ -232,7 +240,8 @@ public class EliminateAlgo {
 
     /**
      * help function to 'notRelevant':
-         * remove every factor that contains not relevant var
+     * remove every factor that contains not relevant var
+     *
      * @param h
      */
     private void removeContainsNotRelevant(String h) {
@@ -508,7 +517,7 @@ public class EliminateAlgo {
 
 
         Double norm = cpt1.getTable().get(keyArray[0]);
-        for (int i=1; i< keyArray.length; i++) {
+        for (int i = 1; i < keyArray.length; i++) {
             norm += cpt1.getTable().get(keyArray[i]);
             setSum(sum + 1);
         }

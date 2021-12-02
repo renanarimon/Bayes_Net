@@ -20,6 +20,7 @@ public class BayesBall {
         return ansBayesBall;
     }
 
+
     /**
      * clean net before new quarry
      */
@@ -39,26 +40,26 @@ public class BayesBall {
             for (NetNode n : net.getBayesNet().values()) {
                 n.setGiven(null);
             }
+            try {
+                String[] splitQ;
+                String q = net.getQueryBayesBall().get(i);
+                splitQ = q.split("\\|");
 
-            String[] splitQ;
-            String q = net.getQueryBayesBall().get(i);
-            splitQ = q.split("\\|");
-
-            NetNode start = net.getBayesNet().get(splitQ[0].split("-")[0]);
-            NetNode end = net.getBayesNet().get(splitQ[0].split("-")[1]);
-
-            if (splitQ.length>1) { // if there are given
-                String[] splitE;
-                splitE = splitQ[1].split(",");
-                for (String s : splitE) {
-                    String[] tmp;
-                    tmp = s.split("=");
-                    net.getBayesNet().get(tmp[0]).setGiven(tmp[1]);
+                NetNode start = net.getBayesNet().get(splitQ[0].split("-")[0]);
+                NetNode end = net.getBayesNet().get(splitQ[0].split("-")[1]);
+                if (splitQ.length>1) { // if there are given
+                    String[] splitE;
+                    splitE = splitQ[1].split(",");
+                    for (String s : splitE) {
+                        String[] tmp;
+                        tmp = s.split("=");
+                        net.getBayesNet().get(tmp[0]).setGiven(tmp[1]);
+                    }
                 }
+                this.ansBayesBall.add(dfs(start, end));
+            }catch (Exception e){
+                this.getAnsBayesBall().add("");
             }
-            this.ansBayesBall.add(dfs(start, end));
-
-
         }
     }
 

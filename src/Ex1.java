@@ -5,6 +5,7 @@
 import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,11 +18,24 @@ public class Ex1 {
     public static void main(String[] args) throws XPathExpressionException, IOException, ParserConfigurationException, SAXException {
         Net net = new Net();
         Path pathIn = Paths.get("input.txt");
-        net.readFromFile(""+pathIn.toAbsolutePath());
+        try {
+            net.readFromFile(""+pathIn.toAbsolutePath());
+        }catch (FileNotFoundException e){
+            System.out.println("file not found");
+        }
+
         BayesBall bayesBall = new BayesBall(net);
-        bayesBall.goOverQ();
+        try{
+            bayesBall.goOverQ();
+        } catch (Exception e){
+            bayesBall.getAnsBayesBall().add("");
+        }
         EliminateAlgo eliminateAlgo = new EliminateAlgo(net);
-        eliminateAlgo.goOverE(net);
+        try{
+            eliminateAlgo.goOverE(net);
+        }catch (Exception e){
+            eliminateAlgo.getAnsEliminate().add("");
+        }
 
         try {
             Path pathOut = Paths.get("output.txt");

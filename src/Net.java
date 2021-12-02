@@ -2,6 +2,7 @@
  * @project AI_algo_ex
  * @author Renana Rimon
  */
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -12,6 +13,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,9 +35,9 @@ public class Net {
     /*
     copy constructor
      */
-    public Net(Net other){
+    public Net(Net other) {
         this.bayesNet = new HashMap<String, NetNode>();
-        for (String s: other.bayesNet.keySet()){
+        for (String s : other.bayesNet.keySet()) {
             NetNode n = new NetNode(other.bayesNet.get(s));
             this.bayesNet.put(s, n);
         }
@@ -65,25 +67,31 @@ public class Net {
         * QueryEliminate
      */
     public void readFromFile(String file_path) throws IOException, XPathExpressionException, ParserConfigurationException, SAXException {
-        File f = new File(file_path);
-        Scanner myReader = new Scanner(f);
-        String xml = myReader.nextLine();
-        this.my_xpath(xml);
-        while (myReader.hasNextLine()) {
-            String str = myReader.nextLine();
-            if (str.charAt(1) != '(') { // bayes ball Q
-                this.QueryBayesBall.add(str);
-            } else {
-                this.QueryEliminate.add(str);
+        try {
+            File f = new File(file_path);
+            Scanner myReader = new Scanner(f);
+            String xml = myReader.nextLine();
+            this.my_xpath(xml);
+            while (myReader.hasNextLine()) {
+                String str = myReader.nextLine();
+                if (str!=""){
+                    if (str.charAt(1) != '(') { // bayes ball Q
+                        this.QueryBayesBall.add(str);
+                    } else {
+                        this.QueryEliminate.add(str);
+                    }
+                }
             }
-
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.err.println("xml not found");
         }
-        myReader.close();
     }
 
-  /*
-  create XPATH to NETWORK in xml
-   */
+
+    /*
+    create XPATH to NETWORK in xml
+     */
     public void my_xpath(String file) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
         DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
         docFact.setNamespaceAware(true);
@@ -96,7 +104,7 @@ public class Net {
             XPathExpression expr = xpath.compile("//NETWORK");
             this.var_xpath(xpath, doc);
             this.def_xpath(xpath, doc);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.println("file doesn't found");
         }
 
@@ -104,6 +112,7 @@ public class Net {
 
     /**
      * create NetNode by VARIABLE from xml
+     *
      * @param xPath
      * @param doc
      * @throws XPathExpressionException
@@ -127,6 +136,7 @@ public class Net {
 
     /**
      * insert DEFINITION to NetNode from xml
+     *
      * @param xPath
      * @param doc
      * @throws XPathExpressionException
@@ -144,7 +154,11 @@ public class Net {
                 this.bayesNet.get(tmpGiven.item(j).getTextContent()).Children.add(curr.getName());
             }
 
-            //CPT
+            /*
+            CPT:
+            key: outcomes organized in order.
+            value: double values.
+             */
             String table = tmpTable.item(0).getTextContent();
             String[] t = table.split(" ");
             ArrayList<Double> arr = new ArrayList<>();
@@ -154,13 +168,13 @@ public class Net {
             }
 
 
-            int j=0;
-            while (j<arr.size()){
-                if (curr.Parents.size()>0){
-                    rec("", j, 0, curr, arr);
+            int j = 0;
+            while (j < arr.size()) {
+                if (curr.Parents.size() > 0) {
+                    creatKey("", j, 0, curr, arr);
                     break;
                 }
-                for (String s: curr.getOutcomes()){
+                for (String s : curr.getOutcomes()) {
                     curr.getCpt().add(s, arr.get(j++));
                 }
             }
@@ -170,29 +184,30 @@ public class Net {
 
     /**
      * A recursive function that adds the values to the CPT according to the exact string key.
-     * @param st = string of outcomes
-     * @param j = index on arr
-     * @param k = index on parents
+     *
+     * @param st   = string of outcomes
+     * @param j    = index on arr
+     * @param k    = index on parents
      * @param curr = NetNode
-     * @param arr = values for table (Double)
+     * @param arr  = values for table (Double)
      * @return int j = index on arr
      */
-    private int rec(String st,int j, int k, NetNode curr, ArrayList<Double>arr) {
-        if (k == curr.Parents.size()-1) {
-            for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
+    private int creatKey(String st, int j, int k, NetNode curr, ArrayList<Double> arr) {
+        if (k == curr.Parents.size() - 1) {
+            for (String s : this.bayesNet.get(curr.Parents.get(k)).getOutcomes()) {
                 for (String s1 : curr.getOutcomes()) {
-                    if (!Objects.equals(st, "")){
-                        curr.getCpt().add(st+ s+"-" + s1, arr.get(j++));
-                    }else {
-                        curr.getCpt().add(st + s+"-" + s1, arr.get(j++));
+                    if (!Objects.equals(st, "")) {
+                        curr.getCpt().add(st + s + "-" + s1, arr.get(j++));
+                    } else {
+                        curr.getCpt().add(st + s + "-" + s1, arr.get(j++));
                     }
 
                 }
             }
             return j;
         }
-        for (String s: this.bayesNet.get(curr.Parents.get(k)).getOutcomes()){
-            j = rec(st+s+"-", j, k+1, curr, arr);
+        for (String s : this.bayesNet.get(curr.Parents.get(k)).getOutcomes()) {
+            j = creatKey(st + s + "-", j, k + 1, curr, arr);
         }
         return j;
     }
